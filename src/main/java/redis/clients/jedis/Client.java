@@ -979,11 +979,14 @@ public class Client extends BinaryClient implements Commands {
   }
 
   public void cluster(final String subcommand, final String... args) {
+    //遍历给定的参数（主机名、端口等），将其编码存入arg中
     final byte[][] arg = new byte[args.length + 1][];
     for (int i = 1; i < arg.length; i++) {
       arg[i] = SafeEncoder.encode(args[i - 1]);
     }
+    //arg的首位用于存储执行命令
     arg[0] = SafeEncoder.encode(subcommand);
+    //拼接建立集群的命令，并发送到服务端
     cluster(arg);
   }
 

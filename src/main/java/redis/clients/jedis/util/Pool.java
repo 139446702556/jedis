@@ -32,21 +32,22 @@ public abstract class Pool<T> implements Closeable {
   public boolean isClosed() {
     return this.internalPool.isClosed();
   }
-
+  /**初始化JedisPool*/
   public void initPool(final GenericObjectPoolConfig poolConfig, PooledObjectFactory<T> factory) {
-
+    //如果已经初始化过pool了，则将其关闭
     if (this.internalPool != null) {
       try {
         closeInternalPool();
       } catch (Exception e) {
       }
     }
-
+    //创建GenericObjectPool对象，来初始化internalPool
     this.internalPool = new GenericObjectPool<>(factory, poolConfig);
   }
 
   public T getResource() {
     try {
+      //通过池来创建Jedis对象
       return internalPool.borrowObject();
     } catch (NoSuchElementException nse) {
       if (null == nse.getCause()) { // The exception was caused by an exhausted pool

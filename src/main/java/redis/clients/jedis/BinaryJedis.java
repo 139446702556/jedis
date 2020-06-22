@@ -600,6 +600,7 @@ public class BinaryJedis implements BasicCommands, BinaryJedisCommands, MultiKey
   /**
    * Delete all the keys of all the existing databases, not just the currently selected one. This
    * command never fails.
+   * 删除现有所有数据库的所有键
    * @return Status code reply
    */
   @Override
@@ -1891,10 +1892,11 @@ public class BinaryJedis implements BasicCommands, BinaryJedisCommands, MultiKey
   }
 
   protected void checkIsInMultiOrPipeline() {
+    //如果当前redis客户端连接，处于事物中，则不能建立集群抛出相应异常
     if (client.isInMulti()) {
       throw new JedisDataException(
           "Cannot use Jedis when in Multi. Please use Transaction or reset jedis state.");
-    } else if (pipeline != null && pipeline.hasPipelinedResponse()) {
+    } else if (pipeline != null && pipeline.hasPipelinedResponse()) { //如果当前节点处于管道模式，则不能建立集群，抛出相应异常
       throw new JedisDataException(
           "Cannot use Jedis when in Pipeline. Please use Pipeline or reset jedis state .");
     }
