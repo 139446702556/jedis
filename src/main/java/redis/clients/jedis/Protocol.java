@@ -82,12 +82,18 @@ public final class Protocol {
 
   public static void sendCommand(final RedisOutputStream os, final ProtocolCommand command,
       final byte[]... args) {
+    //向服务端发送命令
     sendCommand(os, command.getRaw(), args);
   }
 
   private static void sendCommand(final RedisOutputStream os, final byte[] command,
       final byte[]... args) {
     try {
+      //根据redis服务端定义通信规则进行发送命令的信息拼装
+      //按照其对应的顺序将命令发送到服务端
+      //写入过程中，针对服务端发送数据是根据缓冲区大小，一块一块发送的
+      //RedisOutputStream会将要发送的数据保存到内部定义的缓冲区中，当缓冲区满了的时候才会
+      //进行一次真正的网络传输
       os.write(ASTERISK_BYTE);
       os.writeIntCrLf(args.length + 1);
       os.write(DOLLAR_BYTE);
@@ -152,7 +158,9 @@ public final class Protocol {
   }
 
   private static Object process(final RedisInputStream is) {
+    //从输入流中读取服务器返回信息
     final byte b = is.readByte();
+    //根据约定协议进行不同的读取操作
     switch (b) {
     case PLUS_BYTE:
       return processStatusCodeReply(is);
@@ -241,7 +249,7 @@ public final class Protocol {
       return SafeEncoder.encode(String.valueOf(value));
     }
   }
-
+  /**redis命令封装枚举*/
   public static enum Command implements ProtocolCommand {
     PING, SET, GET, QUIT, EXISTS, DEL, UNLINK, TYPE, FLUSHDB, KEYS, RANDOMKEY, RENAME, RENAMENX,
     RENAMEX, DBSIZE, EXPIRE, EXPIREAT, TTL, SELECT, MOVE, FLUSHALL, GETSET, MGET, SETNX, SETEX,

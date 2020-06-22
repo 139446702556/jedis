@@ -29,7 +29,11 @@ import redis.clients.jedis.params.ZAddParams;
 import redis.clients.jedis.params.ZIncrByParams;
 import redis.clients.jedis.util.SafeEncoder;
 import redis.clients.jedis.util.Slowlog;
-
+/**
+ * Jedis的所有针对于redis服务器的操作均是针对与Connection的封装
+ * 其连接、关闭连接等一系列连接操作都是在Connection类中针对socket进行实现的
+ * 而所有的redis命令的方法均是通过Connection的SendCommand方法（其最终也就是根据服务端的协议进行发送不同的数据）
+ */
 public class Jedis extends BinaryJedis implements JedisCommands, MultiKeyCommands,
     AdvancedJedisCommands, ScriptingCommands, BasicCommands, ClusterCommands, SentinelCommands, ModuleCommands {
 
@@ -60,7 +64,7 @@ public class Jedis extends BinaryJedis implements JedisCommands, MultiKeyCommand
       final HostnameVerifier hostnameVerifier) {
     super(host, port, ssl, sslSocketFactory, sslParameters, hostnameVerifier);
   }
-
+  /**此处实例化构造函数调用时，其本质就是创建了一个Connection对象*/
   public Jedis(final String host, final int port, final int timeout) {
     super(host, port, timeout);
   }
@@ -141,6 +145,7 @@ public class Jedis extends BinaryJedis implements JedisCommands, MultiKeyCommand
   /**
    * Set the string value as value of the key. The string can't be longer than 1073741824 bytes (1
    * GB).
+   * 此方法实际实现是调用了Connection类的SendCommand方法来实现的
    * <p>
    * Time complexity: O(1)
    * @param key

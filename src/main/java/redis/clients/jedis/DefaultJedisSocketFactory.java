@@ -9,7 +9,7 @@ import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-
+/**JedisSocketFactory接口的默认实现类*/
 public class DefaultJedisSocketFactory implements JedisSocketFactory {
 
   private String host;
@@ -38,8 +38,10 @@ public class DefaultJedisSocketFactory implements JedisSocketFactory {
   public Socket createSocket() throws IOException {
     Socket socket = null;
     try {
+      //创建新的socket对象
       socket = new Socket();
       // ->@wjw_add
+      //进行socket属性配置
       socket.setReuseAddress(true);
       socket.setKeepAlive(true); // Will monitor the TCP connection is
       // valid
@@ -49,18 +51,23 @@ public class DefaultJedisSocketFactory implements JedisSocketFactory {
       // the underlying socket is closed
       // immediately
       // <-@wjw_add
-
+      //socket建立连接
       socket.connect(new InetSocketAddress(getHost(), getPort()), getConnectionTimeout());
+      //设置读取数据超时时间
       socket.setSoTimeout(getSoTimeout());
-
+      //如果连接需要加密，即需要ssl连接
       if (ssl) {
+        //如果没有初始化sslSocketFactory对象，则进行初始化（使用默认的ssl套接字工厂）
         if (null == sslSocketFactory) {
           sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         }
+        //创建ssl套接字连接
         socket = sslSocketFactory.createSocket(socket, getHost(), getPort(), true);
+        //如果有sslParameters，则设置
         if (null != sslParameters) {
           ((SSLSocket) socket).setSSLParameters(sslParameters);
         }
+        //如果存在验证器，则对当前主机以及socket会话进行校验，失败则抛出对应异常
         if ((null != hostnameVerifier)
             && (!hostnameVerifier.verify(getHost(), ((SSLSocket) socket).getSession()))) {
           String message = String.format(
@@ -68,8 +75,10 @@ public class DefaultJedisSocketFactory implements JedisSocketFactory {
           throw new JedisConnectionException(message);
         }
       }
+      //返回创建好的socket对象
       return socket;
     } catch (Exception ex) {
+      //如果创建socket过程中发生异常，则关闭掉刚创建的socket对象
       if (socket != null) {
         socket.close();
       }

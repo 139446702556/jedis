@@ -48,6 +48,8 @@ public final class RedisOutputStream extends FilterOutputStream {
   }
 
   private void flushBuffer() throws IOException {
+    //将缓冲区中的数据通过网络发送到redis服务器端
+    //并以重制缓冲区索引位置的方式来清空缓冲区
     if (count > 0) {
       out.write(buf, 0, count);
       count = 0;
@@ -55,9 +57,11 @@ public final class RedisOutputStream extends FilterOutputStream {
   }
 
   public void write(final byte b) throws IOException {
+    //判断输出流的缓冲区是否满了，如果满了，则进行一次网络传输
     if (count == buf.length) {
       flushBuffer();
     }
+    //将要传输的数据加入到缓冲区中
     buf[count++] = b;
   }
 

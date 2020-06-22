@@ -105,17 +105,27 @@ public class BinaryClient extends Connection {
 
   @Override
   public void connect() {
+    //当前socket未处于连接状态
     if (!isConnected()) {
+      //调用父类方法进行socket连接
       super.connect();
+      //如果设置了用户信息
       if (user != null) {
+        //进行用户身份信息验证
         auth(user, password);
+        //获取验证结果的回复状态
         getStatusCodeReply();
-      } else if (password != null) {
+      } else if (password != null) { //如果无用户信息，但是设置了密码
+        //进行密码校验
         auth(password);
+        //获取校验结果
         getStatusCodeReply();
       }
+      //如果要使用的非db0数据库
       if (db > 0) {
+        //则进行数据库切换
         select(db);
+        //获取命令操作结果
         getStatusCodeReply();
       }
     }
@@ -616,6 +626,7 @@ public class BinaryClient extends Connection {
   public void auth(final String user, final String password) {
     setUser(user);
     setPassword(password);
+    //发送验证命令请求
     sendCommand(AUTH, user, password);
   }
 
