@@ -1890,7 +1890,7 @@ public class BinaryJedis implements BasicCommands, BinaryJedisCommands, MultiKey
     transaction = new Transaction(client);
     return transaction;
   }
-
+  /**检测当前redis连接是否处于事物或者管道状态，如果是的话，则不能建立集群抛出对应异常*/
   protected void checkIsInMultiOrPipeline() {
     //如果当前redis客户端连接，处于事物中，则不能建立集群抛出相应异常
     if (client.isInMulti()) {

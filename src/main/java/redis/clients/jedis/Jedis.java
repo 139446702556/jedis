@@ -3038,7 +3038,9 @@ public class Jedis extends BinaryJedis implements JedisCommands, MultiKeyCommand
   @Override
   @SuppressWarnings("rawtypes")
   public List<Map<String, String>> sentinelMasters() {
+    //发送redis命令，告知服务器他是哨兵集群的master
     client.sentinel(Protocol.SENTINEL_MASTERS);
+    //刷新（发送缓冲区中的指令，并且获取指令执行结果）
     final List<Object> reply = client.getObjectMultiBulkReply();
 
     final List<Map<String, String>> masters = new ArrayList<>();
@@ -3367,22 +3369,29 @@ public class Jedis extends BinaryJedis implements JedisCommands, MultiKeyCommand
 
   @Override
   public String clusterMeet(final String ip, final int port) {
+    //检测当前连接所处状态是否支持建立集群
     checkIsInMultiOrPipeline();
+    //发送cluster meet命令连接指定节点，使其加入当前工作集群
     client.clusterMeet(ip, port);
+    //获取命令执行服务器反馈结果
     return client.getStatusCodeReply();
   }
 
   @Override
   public String clusterReset(final ClusterReset resetType) {
     checkIsInMultiOrPipeline();
+    //发送执行命令cluster reset来重置集群当前节点
     client.clusterReset(resetType);
     return client.getStatusCodeReply();
   }
-
+  /**给当前节点分配槽点 总大小为2^14个槽位*/
   @Override
   public String clusterAddSlots(final int... slots) {
+    //检验当前节点状态允许进行集群操作（不处于事物或管道状态）
     checkIsInMultiOrPipeline();
+    //发送cluster addslots命令给服务器，来为当前节点分配槽点
     client.clusterAddSlots(slots);
+    //获取指令执行状态
     return client.getStatusCodeReply();
   }
 
@@ -3392,7 +3401,7 @@ public class Jedis extends BinaryJedis implements JedisCommands, MultiKeyCommand
     client.clusterDelSlots(slots);
     return client.getStatusCodeReply();
   }
-
+  /**通过执行cluster info命令来检查集群状态*/
   @Override
   public String clusterInfo() {
     checkIsInMultiOrPipeline();
@@ -3416,7 +3425,9 @@ public class Jedis extends BinaryJedis implements JedisCommands, MultiKeyCommand
 
   @Override
   public String clusterSetSlotMigrating(final int slot, final String nodeId) {
+    //检查当前节点所处的状态
     checkIsInMultiOrPipeline();
+    //发送cluster setslot migrating命令来完成槽点的迁移
     client.clusterSetSlotMigrating(slot, nodeId);
     return client.getStatusCodeReply();
   }

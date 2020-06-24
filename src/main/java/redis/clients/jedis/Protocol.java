@@ -34,7 +34,7 @@ public final class Protocol {
   public static final byte PLUS_BYTE = '+';
   public static final byte MINUS_BYTE = '-';
   public static final byte COLON_BYTE = ':';
-
+  //以下为哨兵相关命令
   public static final String SENTINEL_MASTERS = "masters";
   public static final String SENTINEL_GET_MASTER_ADDR_BY_NAME = "get-master-addr-by-name";
   public static final String SENTINEL_RESET = "reset";
@@ -43,7 +43,7 @@ public final class Protocol {
   public static final String SENTINEL_MONITOR = "monitor";
   public static final String SENTINEL_REMOVE = "remove";
   public static final String SENTINEL_SET = "set";
-
+  //以下为集群相关命令
   public static final String CLUSTER_NODES = "nodes";
   public static final String CLUSTER_MEET = "meet";
   public static final String CLUSTER_RESET = "reset";
@@ -249,7 +249,7 @@ public final class Protocol {
       return SafeEncoder.encode(String.valueOf(value));
     }
   }
-  /**redis命令封装枚举*/
+  /**redis基本命令封装枚举*/
   public static enum Command implements ProtocolCommand {
     PING, SET, GET, QUIT, EXISTS, DEL, UNLINK, TYPE, FLUSHDB, KEYS, RANDOMKEY, RENAME, RENAMENX,
     RENAMEX, DBSIZE, EXPIRE, EXPIREAT, TTL, SELECT, MOVE, FLUSHALL, GETSET, MGET, SETNX, SETEX,

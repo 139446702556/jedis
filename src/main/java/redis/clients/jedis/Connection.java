@@ -263,7 +263,9 @@ public class Connection implements Closeable {
   }
 
   public List<Object> getObjectMultiBulkReply() {
+    //刷新缓冲区，防止指令存储在写缓冲区中没有发送到服务器
     flush();
+    //读取服务器返回的执行结果信息
     return getUnflushedObjectMultiBulkReply();
   }
 

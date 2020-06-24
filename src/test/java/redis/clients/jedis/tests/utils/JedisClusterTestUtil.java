@@ -7,8 +7,10 @@ import redis.clients.jedis.exceptions.JedisException;
 public class JedisClusterTestUtil {
   public static void waitForClusterReady(Jedis... nodes) throws InterruptedException {
     boolean clusterOk = false;
+    //检测集群所有节点是否全部就绪
     while (!clusterOk) {
       boolean isOk = true;
+      //遍历全部集群节点，检查节点状态，所有节点全部返回ok，则集群状态就绪，否则集群存在节点未准备就绪，继续等待
       for (Jedis node : nodes) {
         if (!node.clusterInfo().split("\n")[0].contains("ok")) {
           isOk = false;

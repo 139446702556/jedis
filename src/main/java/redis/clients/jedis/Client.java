@@ -1001,6 +1001,7 @@ public class Client extends BinaryClient implements Commands {
   }
 
   public void clusterMeet(final String ip, final int port) {
+    //发送集群邀请命令，拉其他允许加入集群的机器加入此工作集群
     cluster(Protocol.CLUSTER_MEET, ip, String.valueOf(port));
   }
 
