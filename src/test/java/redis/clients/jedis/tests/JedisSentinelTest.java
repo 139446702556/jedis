@@ -49,22 +49,25 @@ public class JedisSentinelTest {
 
   @Test
   public void sentinel() {
+    //创建客户端连接
     Jedis j = new Jedis(sentinel);
 
     try {
+      //查看所有监听的master信息
       List<Map<String, String>> masters = j.sentinelMasters();
 
       boolean inMasters = false;
+      //查找所有master中是否包含指定name对应的节点信息
       for (Map<String, String> master : masters)
         if (MASTER_NAME.equals(master.get("name"))) inMasters = true;
 
       assertTrue(inMasters);
-
+      //通过master节点的名字来获取master的节点地址信息
       List<String> masterHostAndPort = j.sentinelGetMasterAddrByName(MASTER_NAME);
       HostAndPort masterFromSentinel = new HostAndPort(masterHostAndPort.get(0),
           Integer.parseInt(masterHostAndPort.get(1)));
       assertEquals(master, masterFromSentinel);
-
+      //获取指定master对应的所有从节点信息及状态
       List<Map<String, String>> slaves = j.sentinelSlaves(MASTER_NAME);
       assertTrue(!slaves.isEmpty());
       assertEquals(master.getPort(), Integer.parseInt(slaves.get(0).get("master-port")));

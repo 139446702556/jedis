@@ -3146,7 +3146,7 @@ public class Jedis extends BinaryJedis implements JedisCommands, MultiKeyCommand
     client.sentinel(Protocol.SENTINEL_REMOVE, masterName);
     return client.getStatusCodeReply();
   }
-
+  /**此方法用于修改关于master的配置 例如：sentinel set mastername down-after-milliseconds 1000*/
   @Override
   public String sentinelSet(final String masterName, final Map<String, String> parameterMap) {
     int index = 0;
